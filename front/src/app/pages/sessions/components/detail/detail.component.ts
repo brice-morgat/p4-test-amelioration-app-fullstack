@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -12,9 +12,11 @@ import { CommonModule } from "@angular/common";
 
 @Component({
   selector: 'app-detail',
+  standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './detail.component.html',
-  styleUrls: ['./detail.component.scss']
+  styleUrls: ['./detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DetailComponent implements OnInit {
   public session: Session | undefined;
@@ -25,6 +27,7 @@ export class DetailComponent implements OnInit {
   public userId: string;
 
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private sessionService = inject(SessionService);
   private sessionApiService = inject(SessionApiService);
@@ -63,6 +66,7 @@ export class DetailComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.fetchSession();
+        this.cdr.markForCheck();
       });
   }
 
@@ -72,6 +76,7 @@ export class DetailComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.fetchSession();
+        this.cdr.markForCheck();
       });
   }
 
@@ -82,11 +87,13 @@ export class DetailComponent implements OnInit {
       .subscribe((session: Session) => {
         this.session = session;
         this.isParticipate = session.users.some(u => u === this.sessionService.sessionInformation!.id);
+        this.cdr.markForCheck();
         this.teacherService
           .detail(session.teacher_id.toString())
           .pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe((teacher: Teacher) => {
             this.teacher = teacher;
+            this.cdr.markForCheck();
           });
       });
   }

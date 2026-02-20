@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { SessionInformation } from '../../../../core/models/sessionInformation.interface';
 import { SessionService } from '../../../../core/service/session.service';
@@ -10,9 +10,11 @@ import { RouterModule } from "@angular/router";
 
 @Component({
   selector: 'app-list',
+  standalone: true,
   imports: [CommonModule, MaterialModule, RouterModule],
   templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss']
+  styleUrls: ['./list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListComponent {
   private sessionApiService = inject(SessionApiService);

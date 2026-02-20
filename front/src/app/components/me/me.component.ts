@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -10,12 +10,15 @@ import { CommonModule } from "@angular/common";
 
 @Component({
   selector: 'app-me',
+  standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './me.component.html',
-  styleUrls: ['./me.component.scss']
+  styleUrls: ['./me.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MeComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
   private sessionService = inject(SessionService);
   private matSnackBar = inject(MatSnackBar);
@@ -29,6 +32,7 @@ export class MeComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user: User) => {
         this.user = user;
+        this.cdr.markForCheck();
       });
   }
 

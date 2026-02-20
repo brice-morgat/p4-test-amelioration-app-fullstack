@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -8,12 +8,15 @@ import { MaterialModule } from "../../shared/material.module";
 import { CommonModule } from "@angular/common";
 @Component({
   selector: 'app-register',
+  standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.scss']
+  styleUrls: ['./register.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RegisterComponent {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -65,6 +68,7 @@ export class RegisterComponent {
         },
         error: () => {
           this.onError = true;
+          this.cdr.markForCheck();
         },
       });
   }

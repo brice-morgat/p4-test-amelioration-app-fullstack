@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -12,12 +12,15 @@ import { CommonModule } from "@angular/common";
 
 @Component({
   selector: 'app-form',
+  standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './form.component.html',
-  styleUrls: ['./form.component.scss']
+  styleUrls: ['./form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FormComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
   private matSnackBar = inject(MatSnackBar);
@@ -44,6 +47,7 @@ export class FormComponent implements OnInit {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe((session: Session) => {
           this.initForm(session);
+          this.cdr.markForCheck();
         });
     } else {
       this.initForm();

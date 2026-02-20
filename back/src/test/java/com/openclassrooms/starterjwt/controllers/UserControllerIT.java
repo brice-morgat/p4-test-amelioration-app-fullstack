@@ -49,6 +49,20 @@ class UserControllerIT {
     }
 
     @Test
+    @WithMockUser
+    void findById_shouldReturnNotFoundWhenMissing() throws Exception {
+        mockMvc.perform(get("/api/user/{id}", 999))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void findById_shouldReturnBadRequestWhenIdIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/user/{id}", "abc"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     @WithMockUser(username = "john@mail.com")
     void delete_shouldDeleteWhenAuthenticatedUserMatches() throws Exception {
         User user = userRepository.save(User.builder()

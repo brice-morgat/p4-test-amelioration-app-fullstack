@@ -87,6 +87,37 @@ class SessionControllerIT {
 
     @Test
     @WithMockUser
+    void findById_shouldReturnSession() throws Exception {
+        Session session = sessionRepository.save(Session.builder()
+                .name("Focus Session")
+                .description("Focus description")
+                .date(new Date())
+                .teacher(teacher)
+                .users(new ArrayList<>())
+                .build());
+
+        mockMvc.perform(get("/api/session/{id}", session.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(session.getId()))
+                .andExpect(jsonPath("$.name").value("Focus Session"));
+    }
+
+    @Test
+    @WithMockUser
+    void findById_shouldReturnNotFoundWhenMissing() throws Exception {
+        mockMvc.perform(get("/api/session/{id}", 999))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser
+    void findById_shouldReturnBadRequestWhenIdIsInvalid() throws Exception {
+        mockMvc.perform(get("/api/session/{id}", "abc"))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @WithMockUser
     void create_shouldCreateSession() throws Exception {
         Map<String, Object> payload = new HashMap<>();
         payload.put("name", "Created Session");

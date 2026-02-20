@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleBadRequest(BadRequestException exception) {
+    public ResponseEntity<Object> handleBadRequest(BadRequestException exception) {
         if (exception.getMessage() != null && !exception.getMessage().isBlank()) {
             return ResponseEntity.badRequest().body(new MessageResponse(exception.getMessage()));
         }

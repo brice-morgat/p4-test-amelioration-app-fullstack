@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,12 +11,15 @@ import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [CommonModule, MaterialModule],
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoginComponent {
   private destroyRef = inject(DestroyRef);
+  private cdr = inject(ChangeDetectorRef);
   private authService = inject(AuthService);
   private fb = inject(FormBuilder);
   private router = inject(Router);
@@ -54,6 +57,7 @@ export class LoginComponent {
         },
         error: () => {
           this.onError = true;
+          this.cdr.markForCheck();
         },
       });
   }
